@@ -157,7 +157,7 @@ export class Player {
 
         const shoe1 = new THREE.Mesh(
 
-            new THREEBoxGeometry(0.45,0.2,0.8),
+            new THREE.BoxGeometry(0.45,0.2,0.8),
 
             shoes
 
