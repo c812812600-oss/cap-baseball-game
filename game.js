@@ -249,7 +249,9 @@ export class Game {
 
         }
 
-        if (this.keys["a"]) {
+        this.player.update(0.2);
+          
+          if (this.keys["a"]) {
 
             this.player.mesh.position.x -= 0.2;
 
