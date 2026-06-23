@@ -229,11 +229,15 @@ export class Game {
 
     swing(){
 
-        if(!this.ball)return;
+    this.player.swing();
 
-        this.ball.hit(this.player.mesh.position);
+    this.ball.hit(
 
-    }
+        this.player.mesh.position
+
+    );
+
+}
       update() {
 
         // プレイヤー移動
