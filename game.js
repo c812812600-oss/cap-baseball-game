@@ -1,171 +1,343 @@
 import * as THREE from "https://unpkg.com/three@0.170.0/build/three.module.js";
+import { Player } from "./player.js";
+import { Ball } from "./ball.js";
 
-export class Game{
+export class Game {
 
-constructor(){
+    constructor() {
 
-this.scene=new THREE.Scene();
+        this.scene = null;
+        this.camera = null;
+        this.renderer = null;
 
-this.scene.background=new THREE.Color(0x87ceeb);
+        this.player = null;
+        this.ball = null;
 
-this.camera=new THREE.PerspectiveCamera(
+        this.keys = {};
 
-70,
+        this.homeScore = 0;
+        this.awayScore = 0;
+        this.outs = 0;
+        this.inning = 1;
 
-window.innerWidth/window.innerHeight,
+    }
 
-0.1,
+    init() {
 
-1000
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0x7ecbff);
 
-);
+        this.camera = new THREE.PerspectiveCamera(
+            70,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
 
-this.camera.position.set(0,20,30);
+        this.camera.position.set(0, 12, 18);
 
-this.renderer=new THREE.WebGLRenderer({
+        this.renderer = new THREE.WebGLRenderer({
 
-canvas:document.getElementById("game"),
+            canvas: document.getElementById("game"),
+            antialias: true
 
-antialias:true
+        });
 
-});
+        this.renderer.setPixelRatio(window.devicePixelRatio);
 
-this.renderer.setSize(
+        this.renderer.setSize(
 
-window.innerWidth,
+            window.innerWidth,
 
-window.innerHeight
+            window.innerHeight
 
-);
+        );
 
-window.addEventListener("resize",()=>{
+        this.createLights();
 
-this.camera.aspect=
+        this.createField();
 
-window.innerWidth/window.innerHeight;
+        this.player = new Player(this.scene);
 
-this.camera.updateProjectionMatrix();
+        this.ball = new Ball(this.scene);
 
-this.renderer.setSize(
+    }
 
-window.innerWidth,
+    createLights() {
 
-window.innerHeight
+        const sun = new THREE.DirectionalLight(
 
-);
+            0xffffff,
 
-});
+            2
 
-}
+        );
 
-start(){
+        sun.position.set(
 
-this.createLights();
+            30,
 
-this.createField();
+            50,
 
-document.getElementById("loading").style.display="none";
+            20
 
-this.animate();
+        );
 
-}
+        this.scene.add(sun);
 
-createLights(){
+        const ambient = new THREE.AmbientLight(
 
-const light=new THREE.DirectionalLight(0xffffff,2);
+            0xffffff,
 
-light.position.set(30,60,30);
+            1
 
-this.scene.add(light);
+        );
 
-const amb=new THREE.AmbientLight(0xffffff,.7);
+        this.scene.add(ambient);
 
-this.scene.add(amb);
+    }
 
-}
+    createField() {
 
-createField(){
+        const grass = new THREE.Mesh(
 
-const grass=new THREE.Mesh(
+            new THREE.CircleGeometry(
 
-new THREE.PlaneGeometry(300,300),
+                80,
 
-new THREE.MeshLambertMaterial({
+                64
 
-color:0x32cd32
+            ),
 
-})
+            new THREE.MeshLambertMaterial({
 
-);
+                color: 0x37b24d
 
-grass.rotation.x=-Math.PI/2;
+            })
 
-this.scene.add(grass);
+        );
 
-const mound=new THREE.Mesh(
+        grass.rotation.x = -Math.PI / 2;
 
-new THREE.CylinderGeometry(3,3,.8,32),
+        this.scene.add(grass);
 
-new THREE.MeshLambertMaterial({
+        const dirt = new THREE.Mesh(
 
-color:0xd2b48c
+            new THREE.CircleGeometry(
 
-})
+                12,
 
-);
+                64
 
-mound.position.y=.4;
+            ),
 
-this.scene.add(mound);
+            new THREE.MeshLambertMaterial({
 
-const baseMaterial=new THREE.MeshLambertMaterial({
+                color: 0xc49b63
 
-color:0xffffff
+            })
 
-});
+        );
 
-const positions=[
+        dirt.rotation.x = -Math.PI / 2;
 
-[0,.1,12],
+        dirt.position.y = 0.02;
 
-[12,.1,0],
+        this.scene.add(dirt);
 
-[0,.1,-12],
+        const lineMaterial = new THREE.MeshBasicMaterial({
 
-[-12,.1,0]
+            color: 0xffffff
 
-];
+        });
 
-positions.forEach(p=>{
+        const first = new THREE.Mesh(
 
-const b=new THREE.Mesh(
+            new THREE.BoxGeometry(1,0.2,1),
 
-new THREE.BoxGeometry(2,.3,2),
+            lineMaterial
 
-baseMaterial
+        );
 
-);
+        first.position.set(
 
-b.position.set(...p);
+            8,
 
-this.scene.add(b);
+            0.1,
 
-});
+            0
 
-}
+        );
 
-animate(){
+        this.scene.add(first);
 
-requestAnimationFrame(()=>this.animate());
+        const second = first.clone();
 
-this.renderer.render(
+        second.position.set(
 
-this.scene,
+            0,
 
-this.camera
+            0.1,
 
-);
+            -8
 
-}
+        );
+
+        this.scene.add(second);
+
+        const third = first.clone();
+
+        third.position.set(
+
+            -8,
+
+            0.1,
+
+            0
+
+        );
+
+        this.scene.add(third);
+
+        const home = first.clone();
+
+        home.position.set(
+
+            0,
+
+            0.1,
+
+            8
+
+        );
+
+        this.scene.add(home);
+
+    }
+
+    keyDown(key){
+
+        this.keys[key]=true;
+
+    }
+
+    keyUp(key){
+
+        this.keys[key]=false;
+
+    }
+
+    swing(){
+
+        if(!this.ball)return;
+
+        this.ball.hit(this.player.mesh.position);
+
+    }
+      update() {
+
+        // プレイヤー移動
+        if (this.keys["w"]) {
+
+            this.player.mesh.position.z -= 0.2;
+
+        }
+
+        if (this.keys["s"]) {
+
+            this.player.mesh.position.z += 0.2;
+
+        }
+
+        if (this.keys["a"]) {
+
+            this.player.mesh.position.x -= 0.2;
+
+        }
+
+        if (this.keys["d"]) {
+
+            this.player.mesh.position.x += 0.2;
+
+        }
+
+        // ボール更新
+        this.ball.update();
+
+        // カメラ追従
+        this.camera.position.x +=
+            (this.player.mesh.position.x - this.camera.position.x) * 0.08;
+
+        this.camera.position.z +=
+            (this.player.mesh.position.z + 18 - this.camera.position.z) * 0.08;
+
+        this.camera.lookAt(
+
+            this.player.mesh.position.x,
+
+            2,
+
+            this.player.mesh.position.z
+
+        );
+
+        // ホームラン判定
+        if (this.ball.mesh.position.z < -70) {
+
+            this.homeScore++;
+
+            document.getElementById("homeScore").textContent =
+                this.homeScore;
+
+            document.getElementById("message").textContent =
+                "HOME RUN!!";
+
+            setTimeout(() => {
+
+                document.getElementById("message").textContent = "";
+
+            }, 2000);
+
+            this.ball.reset();
+
+        }
+
+        // ボールが後ろへ行ったら投げ直し
+        if (this.ball.mesh.position.z > 20) {
+
+            this.ball.reset();
+
+        }
+
+    }
+
+    render() {
+
+        this.renderer.render(
+
+            this.scene,
+
+            this.camera
+
+        );
+
+    }
+
+    resize() {
+
+        this.camera.aspect =
+            window.innerWidth / window.innerHeight;
+
+        this.camera.updateProjectionMatrix();
+
+        this.renderer.setSize(
+
+            window.innerWidth,
+
+            window.innerHeight
+
+        );
+
+    }
 
 }
