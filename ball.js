@@ -1,41 +1,107 @@
 import * as THREE from "https://unpkg.com/three@0.170.0/build/three.module.js";
 
-export class Ball{
+export class Ball {
 
-constructor(scene){
+    constructor(scene) {
 
-this.mesh=new THREE.Mesh(
+        this.scene = scene;
 
-new THREE.SphereGeometry(.35,20,20),
+        this.mesh = new THREE.Mesh(
 
-new THREE.MeshStandardMaterial({
+            new THREE.SphereGeometry(0.25,32,32),
 
-color:0xffffff
+            new THREE.MeshStandardMaterial({
 
-})
+                color:0xffffff
 
-);
+            })
 
-scene.add(this.mesh);
+        );
 
-this.mesh.position.set(0,1,-15);
+        scene.add(this.mesh);
 
-this.velocity=new THREE.Vector3(0,0,.35);
+        this.reset();
 
-}
+    }
 
-update(){
+    reset(){
 
-this.mesh.position.add(this.velocity);
+        this.mesh.position.set(
 
-}
+            0,
 
-pitch(){
+            1,
 
-this.mesh.position.set(0,1,-15);
+            -18
 
-this.velocity.set(0,0,.35);
+        );
 
-}
+        this.velocity = new THREE.Vector3(
+
+            0,
+
+            0,
+
+            0.18
+
+        );
+
+        this.gravity = -0.002;
+
+        this.hitFlag = false;
+
+    }
+
+    update(){
+
+        this.mesh.position.add(this.velocity);
+
+        if(this.hitFlag){
+
+            this.velocity.y += this.gravity;
+
+        }
+
+        if(this.mesh.position.y<0.25){
+
+            this.mesh.position.y=0.25;
+
+            if(this.hitFlag){
+
+                this.velocity.y*=-0.35;
+
+                this.velocity.x*=0.95;
+
+                this.velocity.z*=0.95;
+
+            }
+
+        }
+
+    }
+
+    hit(playerPos){
+
+        let d = this.mesh.position.distanceTo(playerPos);
+
+        if(d>3){
+
+            return;
+
+        }
+
+        this.hitFlag=true;
+
+        this.velocity.set(
+
+            (Math.random()-0.5)*0.18,
+
+            0.22+Math.random()*0.08,
+
+            -0.8-Math.random()*0.5
+
+        );
+
+    }
 
 }
