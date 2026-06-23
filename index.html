@@ -2,196 +2,112 @@
 <html lang="ja">
 
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>パワフルキャップ野球</title>
-
-<link rel="stylesheet" href="style.css">
-
-<style>
-
-html,body{
-
-margin:0;
-
-width:100%;
-
-height:100%;
-
-overflow:hidden;
-
-background:#7ec850;
-
-font-family:sans-serif;
-
-}
-
-#game{
-
-position:absolute;
-
-left:0;
-
-top:0;
-
-width:100%;
-
-height:100%;
-
-display:block;
-
-}
-
-#loading{
-
-position:absolute;
-
-left:50%;
-
-top:50%;
-
-transform:translate(-50%,-50%);
-
-font-size:40px;
-
-color:white;
-
-font-weight:bold;
-
-text-shadow:0 0 10px black;
-
-}
-
-#hud{
-
-position:absolute;
-
-top:10px;
-
-left:10px;
-
-color:white;
-
-font-size:24px;
-
-background:rgba(0,0,0,.5);
-
-padding:10px;
-
-border-radius:10px;
-
-}
-
-#cross{
-
-position:absolute;
-
-left:50%;
-
-top:50%;
-
-width:40px;
-
-height:40px;
-
-margin-left:-20px;
-
-margin-top:-20px;
-
-pointer-events:none;
-
-}
-
-#line1{
-
-position:absolute;
-
-width:40px;
-
-height:2px;
-
-background:white;
-
-top:19px;
-
-}
-
-#line2{
-
-position:absolute;
-
-width:2px;
-
-height:40px;
-
-background:white;
-
-left:19px;
-
-}
-
-button{
-
-position:absolute;
-
-bottom:20px;
-
-right:20px;
-
-width:120px;
-
-height:60px;
-
-font-size:24px;
-
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>パワフルキャップ野球</title>
+
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div id="loading">
+    <!-- ローディング -->
+    <div id="loading">
+        <h1>⚾ パワフルキャップ野球</h1>
+        <p>Loading...</p>
+    </div>
 
-POWERFUL CAP BASEBALL
+    <!-- HUD -->
+    <div id="hud">
 
-</div>
+        <div id="scoreboard">
 
-<div id="hud">
+            <div class="team">
 
-HOME 0
+                <span>HOME</span>
 
-<br>
+                <span id="homeScore">0</span>
 
-AWAY 0
+            </div>
 
-<br>
+            <div class="team">
 
-OUT 0
+                <span>AWAY</span>
 
-</div>
+                <span id="awayScore">0</span>
 
-<div id="cross">
+            </div>
 
-<div id="line1"></div>
+        </div>
 
-<div id="line2"></div>
+        <div id="info">
 
-</div>
+            <div>OUT：<span id="outs">0</span></div>
 
-<canvas id="game"></canvas>
+            <div>INNING：<span id="inning">1</span></div>
 
-<button id="swing">
+        </div>
 
-SWING
+    </div>
 
-</button>
+    <!-- 照準 -->
+    <div id="crosshair">
 
-<script type="module" src="main.js"></script>
+        <div class="h"></div>
+
+        <div class="v"></div>
+
+    </div>
+
+    <!-- ゲーム描画 -->
+    <canvas id="game"></canvas>
+
+    <!-- PC操作説明 -->
+    <div id="guide">
+
+        <h3>操作方法</h3>
+
+        <p>WASD：移動</p>
+
+        <p>SPACE：スイング</p>
+
+        <p>SHIFT：ダッシュ</p>
+
+    </div>
+
+    <!-- スマホ操作 -->
+    <div id="mobile">
+
+        <button id="left">◀</button>
+
+        <button id="up">▲</button>
+
+        <button id="down">▼</button>
+
+        <button id="right">▶</button>
+
+        <button id="swing">⚾</button>
+
+    </div>
+
+    <!-- ホームラン表示 -->
+    <div id="message"></div>
+
+    <!-- ゲームオーバー画面 -->
+    <div id="gameover" class="hidden">
+
+        <h1>GAME SET</h1>
+
+        <button onclick="location.reload()">
+
+            もう一度遊ぶ
+
+        </button>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script type="module" src="main.js"></script>
 
 </body>
 
